@@ -28,10 +28,12 @@ export default class List extends Component {
         const repos = this.state.repos;
         
         return (
-            <div>
-                {repos.map((repo) => 
-                    <Row key={repo.id} repo={repo} />
-                )}
+            <div className='container'>
+                <div className='list'>
+                    {repos.map((repo) => 
+                        <Row key={repo.id} repo={repo} />
+                    )}
+                </div>
             </div>
         )
     }
