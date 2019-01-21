@@ -111,4 +111,23 @@ img {
 }
 .brand{
     text-align: center;
+
+}
+.spinner{
+    text-align: center;
+    margin-top: 20px;
+}
+.spinner img{
+    width: 32px;
+    height: 32px;
+    margin: auto;
+}
+.error{
+    text-align: center;
+    margin-top: 20px;
+}
+.error img{
+    width: 124px;
+    height: 124px;
+    margin: auto;
 }
