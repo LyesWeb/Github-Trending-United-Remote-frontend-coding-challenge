@@ -1,67 +1,48 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 import Row from './Row';
 import Loading from './Loading';
 import Error from './Error';
 
-export default class List extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoading: true,
-            page: 1,
-            date: '2017-10-22',
-            repos: []
-        }
-    }
+const List = () => {
 
-    componentDidMount(){
-        this.fetchData();
-    }
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [page, setPage] = useState(1);
+    const [date, setDate] = useState('2017-10-22');
+    const [repos, setRepos] = useState([]);
 
-    fetchData(){
-        fetch(`https://api.github.com/search/repositories?q=created:>${this.state.date}&sort=stars&order=desc&page=${this.state.page}`)
-        .then(response => response.json())
-        .then(parsedJSON => 
-            this.setState({repos: parsedJSON.items, isLoading: false})
-        )
-        .catch(error => 
-            this.setState({ isLoading: false })
-        );
-    }
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsError(false);
+            setIsLoading(true);
+            try{
+                const result = await axios(`https://api.github.com/search/repositories?q=created:>${date}&sort=stars&order=desc&page=${page}`);
+                setRepos(result.data.items);
+            }catch(error) {
+                setIsError(true);
+            }
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
 
-    render() {
+    console.log(repos);
 
-        const { repos , isLoading} = this.state;
-
-        if(isLoading) return(
-            <div className='container'>
-                <div className='list'>
-                    <Loading desc='Loading repositories ...' />
-                </div>
-            </div>
-        );
-
-        let reposHtml = null;
-
-        if(repos)
-            if(repos.length!==0 && isLoading===false)
-                reposHtml = repos.map((repo) => 
+    return (
+        <div className='container'>
+            <div className='list'>
+            {isError && <Error desc='error !' />}
+            {isLoading ? 
+            <Loading desc='Loading repositories ...' />
+            : 
+                repos.map(repo => (
                     <Row key={repo.id} repo={repo} />
-                )
-
-        return (
-            <div className='container'>
-                <div className='list'>
-                    {
-                       reposHtml === null
-                       ?
-                       <Error desc='error !' />
-                       :
-                       reposHtml
-                    }
-
-                </div>
+                ))
+            }
             </div>
-        )
-    }
+        </div>
+    )
 }
+
+export default List;
