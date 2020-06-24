@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import uuid from 'uuid/v4';
 import Row from './Row';
 import Loading from './Loading';
 import Error from './Error';
@@ -44,7 +45,7 @@ const List = () => {
             >
                 {isError && <Error desc='Error loading repositories !' refresh={fetchData} />}
                 {repos.map(repo => (
-                    <Row key={repo.id} repo={repo} />
+                    <Row key={uuid()} repo={repo} />
                 ))}
             </InfiniteScroll>
             </div>
