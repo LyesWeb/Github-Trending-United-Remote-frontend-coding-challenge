@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Row from './Row';
 import Loading from './Loading';
 import Error from './Error';
@@ -13,33 +14,39 @@ const List = () => {
     const [repos, setRepos] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            setIsError(false);
-            setIsLoading(true);
-            try{
-                const result = await axios(`https://api.github.com/search/repositories?q=created:>${date}&sort=stars&order=desc&page=${page}`);
-                setRepos(result.data.items);
-            }catch(error) {
-                setIsError(true);
-            }
-            setIsLoading(false);
-        };
         fetchData();
-    }, []);
+    }, [page]);
 
-    console.log(repos);
+    const fetchData = async () => {
+        setIsError(false);
+        setIsLoading(true);
+        try{
+            const result = await axios(`https://api.github.com/search/repositories?q=created:>${date}&sort=stars&order=desc&page=${page}`);
+            setRepos(repos.concat(result.data.items));
+        }catch(error) {
+            setIsError(true);
+        }
+        setIsLoading(false);
+    };
 
     return (
         <div className='container'>
-            <div className='list'>
-            {isError && <Error desc='error !' />}
-            {isLoading ? 
-            <Loading desc='Loading repositories ...' />
-            : 
-                repos.map(repo => (
+            <div className="loaderWrapper">
+                {isLoading && <Loading desc='Loading repositories ...' />}
+            </div>
+            <div className='list' id="list">
+            <InfiniteScroll
+                dataLength={repos.length}
+                next={() => setPage(page+1)}
+                hasMore={true}
+                scrollableTarget="list"
+                endMessage={<p style={{textAlign: 'center'}}>Yay! You have seen it all</p>}
+            >
+                {isError && <Error desc='Error loading repositories !' />}
+                {repos.map(repo => (
                     <Row key={repo.id} repo={repo} />
-                ))
-            }
+                ))}
+            </InfiniteScroll>
             </div>
         </div>
     )
