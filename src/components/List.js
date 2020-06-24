@@ -42,7 +42,7 @@ const List = () => {
                 scrollableTarget="list"
                 endMessage={<p style={{textAlign: 'center'}}>Yay! You have seen it all</p>}
             >
-                {isError && <Error desc='Error loading repositories !' />}
+                {isError && <Error desc='Error loading repositories !' refresh={fetchData} />}
                 {repos.map(repo => (
                     <Row key={repo.id} repo={repo} />
                 ))}
